@@ -24,7 +24,8 @@ def _selective_search_IJCV_top_k(split, year, top_k):
 # Set up voc_<year>_<split> using selective search "fast" mode
 for split in ['train', 'val', 'val1', 'val2', 'test']:
     name = 'imagenet_{}'.format(split)
-    devkit_path = '/media/VSlab2/imagenet/ILSVRC13'
+    #devkit_path = '/media/VSlab2/imagenet/ILSVRC13'
+    devkit_path = '/home/lonestar/py-faster-rcnn/data/imagenet/ILSVRC2013_devkit'
     __sets[name] = (lambda split=split, devkit_path = devkit_path:datasets.imagenet.imagenet(split,devkit_path))
     print name
     print __sets[name]
