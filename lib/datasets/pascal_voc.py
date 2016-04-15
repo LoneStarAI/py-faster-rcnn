@@ -8,7 +8,8 @@
 import datasets
 import datasets.pascal_voc
 import os
-import datasets.imdb
+#import datasets.imdb
+from datasets.imdb import imdb
 import xml.dom.minidom as minidom
 import numpy as np
 import scipy.sparse
@@ -17,7 +18,7 @@ import utils.cython_bbox
 import cPickle
 import subprocess
 
-class pascal_voc(datasets.imdb):
+class pascal_voc(imdb):
     def __init__(self, image_set, year, devkit_path=None):
         datasets.imdb.__init__(self, 'voc_' + year + '_' + image_set)
         self._year = year

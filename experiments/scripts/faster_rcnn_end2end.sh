@@ -17,6 +17,7 @@ ITERS=70000
 DATASET_TRAIN=voc_2007_trainval
 DATASET_TEST=voc_2007_test
 
+
 array=( $@ )
 len=${#array[@]}
 EXTRA_ARGS=${array[@]:2:$len}

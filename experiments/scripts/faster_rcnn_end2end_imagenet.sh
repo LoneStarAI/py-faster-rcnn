@@ -17,6 +17,9 @@ ITERS=100000
 DATASET_TRAIN=imagenet_val1
 DATASET_TEST=imagenet_val2
 
+#DATASET_TRAIN=imagenet_test
+#DATASET_TEST=imagenet_val
+
 array=( $@ )
 len=${#array[@]}
 EXTRA_ARGS=${array[@]:2:$len}
