@@ -82,33 +82,45 @@ class imagenet(imdb):
         """
         Return the database of ground-truth regions of interest.
         This function loads/saves from/to a cache file to speed up future calls.
-        """
-        import ipdb
-        ipdb.set_trace()
+  ```      """
         cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
+        cache_index = os.path.join(self.cache_path, self.name + '_index_sub.pkl')
         if os.path.exists(cache_file):
             with open(cache_file, 'rb') as fid:
                 roidb = cPickle.load(fid)
-            print '{} gt roidb loaded from {}'.format(self.name, cache_file)
+            with open(cache_index, 'rb') as fid:
+                self._image_index = cPickle.load(fid)
+            print '{} gt roidb loaded from {}, image_index loaded from {}'.format(self.name, cache_file, cache_index)
             return roidb
 
         # load annotation from each img
-        #gt_roidb = [self._load_imagenet_annotation(index)
-        #            for index in self.image_index]
-        gt_roidb = [self._load_imagenet_annotation(index)
+        # get a subset of image_index that has bbox info
+        index_sub = []
+        for index in self.image_index:
+            if len(self._load_imagenet_annotation(index)['gt_classes']) == 0:
+                continue
+            index_sub.append(index) 
+
+        # write index_sub into cache_index
+        self._image_index = index_sub
+        with open(cache_index, 'wb') as fid:
+            cPickle.dump(index_sub, fid)
+            print 'wrote index_sub (data with bbox) to {}'.format(cache_index)
+
+        gt_roidb_sub = [self._load_imagenet_annotation(index)
                     for index in self.image_index]
-        gt_roidb_sub = [] 
-        for x in gt_roidb:
-          if len(x['gt_classes']) == 0:
-            continue
-          gt_roidb_sub.append(x)
+
+        #gt_roidb_sub = [] 
+        #for x in gt_roidb:
+        #  if len(x['gt_classes']) == 0:
+        #    continue
+        #  gt_roidb_sub.append(x)
         # write gt_roidb into cached pickle file
-        ipdb.set_trace()
         with open(cache_file, 'wb') as fid:
             cPickle.dump(gt_roidb_sub, fid, cPickle.HIGHEST_PROTOCOL)
         print 'wrote gt roidb to {}'.format(cache_file)
 
-        #return gt_roidb
+        # return gt_roidb
         return gt_roidb_sub
 
     def selective_search_roidb(self):

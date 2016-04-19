@@ -15,7 +15,7 @@ import PIL
 
 def prepare_roidb(imdb):
     """Enrich the imdb's roidb by adding some derived quantities that
-    are useful for training. This function precomputes the maximum
+    are useful for training: This function precomputes the maximum
     overlap, taken over ground-truth boxes, between each ROI and
     each ground-truth box. The class with maximum overlap is also
     recorded.
@@ -45,8 +45,6 @@ def prepare_roidb(imdb):
 
 def add_bbox_regression_targets(roidb):
     """Add information needed to train bounding-box regressors."""
-    import ipdb
-    ipdb.set_trace()
     assert len(roidb) > 0
     assert 'max_classes' in roidb[0], 'Did you call prepare_roidb first?'
 
