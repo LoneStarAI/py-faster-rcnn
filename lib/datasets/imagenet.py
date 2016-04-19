@@ -29,9 +29,12 @@ class imagenet(imdb):
 	for i in xrange(200):
 		self._classes = self._classes + (synsets['synsets'][0][i][2][0],)
 		self._wnid = self._wnid + (synsets['synsets'][0][i][1][0],)
+
 	self._wnid_to_ind = dict(zip(self._wnid, xrange(self.num_classes)))
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = ['.JPEG']
+        #import ipdb
+        #ipdb.set_trace()
         self._image_index = self._load_image_set_index()
         # Default to roidb handler
         self._roidb_handler = self.selective_search_roidb
@@ -80,6 +83,8 @@ class imagenet(imdb):
         Return the database of ground-truth regions of interest.
         This function loads/saves from/to a cache file to speed up future calls.
         """
+        import ipdb
+        ipdb.set_trace()
         cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
         if os.path.exists(cache_file):
             with open(cache_file, 'rb') as fid:
@@ -87,13 +92,24 @@ class imagenet(imdb):
             print '{} gt roidb loaded from {}'.format(self.name, cache_file)
             return roidb
 
+        # load annotation from each img
+        #gt_roidb = [self._load_imagenet_annotation(index)
+        #            for index in self.image_index]
         gt_roidb = [self._load_imagenet_annotation(index)
                     for index in self.image_index]
+        gt_roidb_sub = [] 
+        for x in gt_roidb:
+          if len(x['gt_classes']) == 0:
+            continue
+          gt_roidb_sub.append(x)
+        # write gt_roidb into cached pickle file
+        ipdb.set_trace()
         with open(cache_file, 'wb') as fid:
-            cPickle.dump(gt_roidb, fid, cPickle.HIGHEST_PROTOCOL)
+            cPickle.dump(gt_roidb_sub, fid, cPickle.HIGHEST_PROTOCOL)
         print 'wrote gt roidb to {}'.format(cache_file)
 
-        return gt_roidb
+        #return gt_roidb
+        return gt_roidb_sub
 
     def selective_search_roidb(self):
         """
@@ -157,7 +173,7 @@ class imagenet(imdb):
 
     def selective_search_IJCV_roidb(self):
         """
-        eturn the database of selective search regions of interest.
+        Return the database of selective search regions of interest.
         Ground-truth ROIs are also included.
         This function loads/saves from/to a cache file to speed up future calls.
         """
@@ -198,7 +214,7 @@ class imagenet(imdb):
 
     def _load_imagenet_annotation(self, index):
         """
-        Load image and bounding boxes info from txt files of imagenet.
+        Load image and bounding boxes info of ONE image from txt files of imagenet.
         """
         filename = os.path.join(self._devkit_path, 'ILSVRC2013_DET_bbox_' + self._image_set[:-1], index[:23] + '.xml')
         # print 'Loading: {}'.format(filename) 
@@ -229,6 +245,7 @@ class imagenet(imdb):
             cls = self._wnid_to_ind[
                     str(get_data_from_tag(obj, "name")).lower().strip()]
             boxes[ix, :] = [x1, y1, x2, y2]
+            # ground truth classes index
             gt_classes[ix] = cls
             overlaps[ix, cls] = 1.0
 

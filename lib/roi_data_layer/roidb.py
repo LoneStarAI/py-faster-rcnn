@@ -45,6 +45,8 @@ def prepare_roidb(imdb):
 
 def add_bbox_regression_targets(roidb):
     """Add information needed to train bounding-box regressors."""
+    import ipdb
+    ipdb.set_trace()
     assert len(roidb) > 0
     assert 'max_classes' in roidb[0], 'Did you call prepare_roidb first?'
 
@@ -120,7 +122,12 @@ def _compute_targets(rois, overlaps, labels):
 
     # Find which gt ROI each ex ROI has max overlap with:
     # this will be the ex ROI's gt target
-    gt_assignment = ex_gt_overlaps.argmax(axis=1)
+    #gt_assignment = ex_gt_overlaps.argmax(axis=1)
+    try: 
+      gt_assignment = ex_gt_overlaps.argmax(axis=1)
+    except:
+      failed=(rois, overlaps, labels, ex_gt_overlaps) 
+      return
     gt_rois = rois[gt_inds[gt_assignment], :]
     ex_rois = rois[ex_inds, :]
 
