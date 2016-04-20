@@ -76,7 +76,7 @@ def add_bbox_regression_targets(roidb):
                 cls_inds = np.where(targets[:, 0] == cls)[0]
                 if cls_inds.size > 0:
                     class_counts[cls] += cls_inds.size
-                    sums[cls, :] += targets[cls_inds, 1:].sum(axis=0)
+                    sums[cls, :] += targets[cls_inds, 2:].sum(axis=1)
                     squared_sums[cls, :] += \
                             (targets[cls_inds, 1:] ** 2).sum(axis=0)
 
@@ -120,12 +120,7 @@ def _compute_targets(rois, overlaps, labels):
 
     # Find which gt ROI each ex ROI has max overlap with:
     # this will be the ex ROI's gt target
-    #gt_assignment = ex_gt_overlaps.argmax(axis=1)
-    try: 
-      gt_assignment = ex_gt_overlaps.argmax(axis=1)
-    except:
-      failed=(rois, overlaps, labels, ex_gt_overlaps) 
-      return
+    gt_assignment = ex_gt_overlaps.argmax(axis=1)
     gt_rois = rois[gt_inds[gt_assignment], :]
     ex_rois = rois[ex_inds, :]
 
