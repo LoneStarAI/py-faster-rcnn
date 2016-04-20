@@ -116,7 +116,7 @@ class SolverWrapper(object):
 
 def get_training_roidb(imdb):
     """Returns a roidb (Region of Interest database) for use in training."""
-    cfg.TRAIN.USE_FLIPPED=False  # turn off flipping
+    #cfg.TRAIN.USE_FLIPPED=False  # turn off flipping
     if cfg.TRAIN.USE_FLIPPED:
         print 'Appending horizontally-flipped training examples...'
         imdb.append_flipped_images()

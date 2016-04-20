@@ -96,6 +96,8 @@ class imdb(object):
         raise NotImplementedError
 
     def append_flipped_images(self):
+        # hacky to set the self._num_images as the reduced subset
+        boxes = self.roidb[0]['boxes'].copy()
         num_images = self.num_images
         widths = [PIL.Image.open(self.image_path_at(i)).size[0]
                   for i in xrange(num_images)]

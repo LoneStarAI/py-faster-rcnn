@@ -90,6 +90,7 @@ class imagenet(imdb):
                 roidb = cPickle.load(fid)
             with open(cache_index, 'rb') as fid:
                 self._image_index = cPickle.load(fid)
+                self._num_images = len(self._image_index)
             print '{} gt roidb loaded from {}, image_index loaded from {}'.format(self.name, cache_file, cache_index)
             return roidb
 
