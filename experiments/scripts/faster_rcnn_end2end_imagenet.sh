@@ -14,8 +14,9 @@ GPU_ID=$1
 NET=$2
 NET_lc=${NET,,}
 ITERS=100000
-DATASET_TRAIN=imagenet_val1
-DATASET_TEST=imagenet_val2
+#ITERS=100
+DATASET_TRAIN=train_curated
+DATASET_TEST=val1
 
 array=( $@ )
 len=${#array[@]}
@@ -29,7 +30,7 @@ echo Logging output to "$LOG"
 NET_INIT=data/imagenet_models/${NET}.v2.caffemodel
 
 time ./tools/train_net_imagenet.py --gpu ${GPU_ID} \
-  --solver models/${NET}/faster_rcnn_end2end/solver.prototxt \
+  --solver models/imagenet/${NET}/faster_rcnn_end2end/solver.prototxt \
   --weights ${NET_INIT} \
   --imdb ${DATASET_TRAIN} \
   --iters ${ITERS} \
@@ -40,8 +41,10 @@ set +x
 NET_FINAL=`grep -B 1 "done solving" ${LOG} | grep "Wrote snapshot" | awk '{print $4}'`
 set -x
 
+#NET_FINAL=output/faster_rcnn_end2end/train_100/vgg16_faster_rcnn_iter_100.caffemodel
+
 time ./tools/test_net_imagenet.py --gpu ${GPU_ID} \
-  --def models/${NET}/faster_rcnn_end2end/test.prototxt \
+  --def models/imagenet/${NET}/faster_rcnn_end2end/test.prototxt \
   --net ${NET_FINAL} \
   --imdb ${DATASET_TEST} \
   --cfg experiments/cfgs/faster_rcnn_end2end.yml \
