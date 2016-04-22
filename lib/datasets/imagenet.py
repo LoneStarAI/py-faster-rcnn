@@ -22,7 +22,12 @@ class imagenet(imdb):
         imdb.__init__(self, image_set)
 	self._image_set = image_set
         self._devkit_path = devkit_path
-        self._data_path = os.path.join(self._devkit_path, 'ILSVRC2013_DET_' + self._image_set[:-1])
+        if self._image_set == 'val1' or self._image_set== 'val2':
+            self._data_path = os.path.join(self._devkit_path, 'ILSVRC2014_DET_' + self._image_set[:-1])
+        elif self._image_set in ['train', 'val', 'test']:
+            self._data_path = os.path.join(self._devkit_path, 'ILSVRC2014_DET_' + self._image_set)
+        else:
+            self._data_path = os.path.join(self._devkit_path, 'ILSVRC2014_DET_' + self._image_set.split('_')[0])
 	synsets = sio.loadmat(os.path.join(self._devkit_path, 'data', 'meta_det.mat'))
 	self._classes = ('__background__',)
 	self._wnid = (0,)
@@ -33,8 +38,6 @@ class imagenet(imdb):
 	self._wnid_to_ind = dict(zip(self._wnid, xrange(self.num_classes)))
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = ['.JPEG']
-        #import ipdb
-        #ipdb.set_trace()
         self._image_index = self._load_image_set_index()
         # Default to roidb handler
         self._roidb_handler = self.selective_search_roidb
@@ -60,7 +63,8 @@ class imagenet(imdb):
         Construct an image path from the image's "index" identifier.
         """
         image_path = os.path.join(self._data_path,
-                              index[:23] + self._image_ext[0])
+                              index.split(' ')[0]+ self._image_ext[0])
+
         assert os.path.exists(image_path), \
                 'Path does not exist: {}'.format(image_path)
 	return image_path
@@ -229,7 +233,16 @@ class imagenet(imdb):
         """
         Load image and bounding boxes info of ONE image from txt files of imagenet.
         """
-        filename = os.path.join(self._devkit_path, 'ILSVRC2013_DET_bbox_' + self._image_set[:-1], index[:23] + '.xml')
+        if self._image_set == 'val1' or self._image_set== 'val2':
+            filename = os.path.join(self._devkit_path, 'ILSVRC2014_DET_bbox_' + self._image_set[:-1])
+        elif self._image_set in ['train', 'val', 'test']:
+            filename = os.path.join(self._devkit_path, 'ILSVRC2014_DET_bbox_' + self._image_set)
+        else:
+            filename = os.path.join(self._devkit_path, 'ILSVRC2014_DET_bbox_' + self._image_set.split('_')[0])
+        if self._image_set in ['val', 'val11', 'val2']:
+            filename = os.path.join(filename, index[:23] + '.xml')
+        else:
+            filename = os.path.join(filename, index + '.xml')
         # print 'Loading: {}'.format(filename) 
         def get_data_from_tag(node, tag):
             return node.getElementsByTagName(tag)[0].childNodes[0].data
