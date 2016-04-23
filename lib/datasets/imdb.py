@@ -96,6 +96,7 @@ class imdb(object):
         raise NotImplementedError
 
     def append_flipped_images(self):
+        '''Horizontally flip the image and bbox'''
         # hacky to set the self._num_images as the reduced subset
         boxes = self.roidb[0]['boxes'].copy()
         num_images = self.num_images
@@ -105,9 +106,17 @@ class imdb(object):
             boxes = self.roidb[i]['boxes'].copy()
             oldx1 = boxes[:, 0].copy()
             oldx2 = boxes[:, 2].copy()
+            # fixing the out of box error: oldx2 == width, which will lead the new box[:,0] underflowl
+            edge_box_ind = np.where(oldx2 == widths[i])
+            oldx2[edge_box_ind] -= 1
+            # horizontal flipping the bbox
             boxes[:, 0] = widths[i] - oldx2 - 1
             boxes[:, 2] = widths[i] - oldx1 - 1
-            assert (boxes[:, 2] >= boxes[:, 0]).all()
+            # sounds like start index from 0, see self.roidb[500]
+            if (boxes[:, 2] <= boxes[:, 0]).any():
+                import ipdb
+                ipdb.set_trace()
+            #assert (boxes[:, 2] >= boxes[:, 0]).all()
             entry = {'boxes' : boxes,
                      'gt_overlaps' : self.roidb[i]['gt_overlaps'],
                      'gt_classes' : self.roidb[i]['gt_classes'],
