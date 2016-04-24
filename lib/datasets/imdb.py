@@ -106,8 +106,15 @@ class imdb(object):
             boxes = self.roidb[i]['boxes'].copy()
             oldx1 = boxes[:, 0].copy()
             oldx2 = boxes[:, 2].copy()
+            edge_box_ind = np.where(oldx2 == widths[i])
+            oldx2[edge_box_ind] -= 1
+            # horizontal flipping the bbox
             boxes[:, 0] = widths[i] - oldx2 - 1
             boxes[:, 2] = widths[i] - oldx1 - 1
+            # sounds like start index from 0, see self.roidb[500]
+            if (boxes[:, 2] <= boxes[:, 0]).any():
+                import ipdb
+                ipdb.set_trace()
             for j in xrange(boxes.shape[0]):
                 if boxes[j, 2] < boxes[j, 0]:
                     print boxes[j, 2], boxes[j, 0], i, widths[i], self.image_path_at(i)
