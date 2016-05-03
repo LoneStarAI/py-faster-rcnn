@@ -26,8 +26,9 @@ def _selective_search_IJCV_top_k(split, year, top_k):
 for year in ['2007', '2012']:
     for split in ['train', 'val', 'trainval', 'test']:
         name = 'voc_{}_{}'.format(year, split)
+        ipdb.set_trace()
         __sets[name] = (lambda split=split, year=year:
-                datasets.pascal_voc(split, year))
+                datasets.pascal_voc.pascal_voc(split, year))
 
 # Set up voc_<year>_<split>_top_<k> using selective search "quality" mode
 # but only returning the first k boxes

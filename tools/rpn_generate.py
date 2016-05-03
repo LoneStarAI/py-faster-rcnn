@@ -72,6 +72,9 @@ if __name__ == '__main__':
     print('Using config:')
     pprint.pprint(cfg)
 
+    args.prototxt = '/home/haijieg/py-faster-rcnn/models/coco/VGG16/faster_rcnn_end2end/test.prototxt'
+    args.caffemodel = '/home/haijieg/py-faster-rcnn/data/faster_rcnn_models/coco_vgg16_faster_rcnn_final.caffemodel'
+
     while not os.path.exists(args.caffemodel) and args.wait:
         print('Waiting for {} to exist...'.format(args.caffemodel))
         time.sleep(10)
@@ -81,6 +84,8 @@ if __name__ == '__main__':
     net = caffe.Net(args.prototxt, args.caffemodel, caffe.TEST)
     net.name = os.path.splitext(os.path.basename(args.caffemodel))[0]
 
+    import ipdb
+    ipdb.set_trace()
     imdb = get_imdb(args.imdb_name)
     imdb_boxes = imdb_proposals(net, imdb)
 
